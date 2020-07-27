@@ -44,6 +44,8 @@ export class PacoteService implements IPacoteService {
 		packageName = this.getRealPackageName(packageName);
 		const pacoteOptions = await this.getPacoteBaseOptions();
 
+		this.$logger.trace(`Package name: ${packageName}`)
+
 		return new Promise<void>((resolve, reject) => {
 			this.$logger.trace(`Calling pacoteService.extractPackage for packageName: '${packageName}', destinationDir: '${destinationDirectory}' and options: ${options}`);
 

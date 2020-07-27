@@ -410,7 +410,11 @@ export class AndroidProjectService extends projectServiceBaseLib.PlatformProject
 
 	private copy(projectRoot: string, frameworkDir: string, files: string, cpArg: string): void {
 		const paths = files.split(' ').map(p => path.join(frameworkDir, p));
-		shell.cp(cpArg, paths, projectRoot);
+		this.$logger.trace(frameworkDir);
+		if (this.$fs.exists(frameworkDir)) {
+			this.$logger.trace(this.$fs.readDirectory(frameworkDir));
+			shell.cp(cpArg, paths, projectRoot);
+		}
 	}
 
 	private validatePackageName(packageName: string): void {

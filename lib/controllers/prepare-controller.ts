@@ -38,6 +38,47 @@ export class PrepareController extends EventEmitter {
 			await this.$markingModeService.handleMarkingModeFullDeprecation({ projectDir: projectData.projectDir });
 		}
 
+		this.$logger.trace(`PREPARE DATA: `);
+		this.$logger.trace(prepareData);
+		this.$logger.trace(JSON.stringify(prepareData, function (m: any, r) {
+			const cache: any[] = [];
+			let message: any = m;
+			if (typeof m === 'object') try {
+				message = JSON.stringify(m, function (key, value) {
+					if ((typeof value === 'object') && (value !== null)) {
+						if (cache.indexOf(value) !== -1) {
+							/* Circular reference found, discard key */
+							return;
+						}
+						/* Store value in our collection */
+						cache.push(value);
+					}
+					return value;
+				});
+			} catch (e) {
+				console.debug(  "Could not stringify object or value:\n"+ e.message +"\n" );
+				message = m;
+			} finally {
+				if (typeof message !== "string") message = m;
+			}
+
+			if (typeof message === 'boolean') message = m + "";
+
+			if ((r !== undefined) && (typeof r.replace === 'function') && (typeof message === 'string'))
+				message = r.replace(/\$1/, message);
+
+			try {
+				console.debug(message);
+				console.debug();
+			} catch (e) {
+				//alert( message );
+			} finally {
+				return message;
+			}
+
+			return message;
+		}));
+
 		await this.trackRuntimeVersion(prepareData.platform, projectData);
 		await this.$pluginsService.ensureAllDependenciesAreInstalled(projectData);
 

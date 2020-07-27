@@ -352,7 +352,8 @@ export class ProjectDataService implements IProjectDataService {
 
 		const props = key.split(NATIVESCRIPT_PROPS_INTERNAL_DELIMITER);
 		const data: any = projectFileInfo.projectData;
-		let currentData = data;
+		let currentData = this.$fs.readJson(projectFileInfo.projectFilePath)
+		if (currentData === null) currentData = data;
 
 		_.each(props, (prop, index: number) => {
 			if (index === (props.length - 1)) {
@@ -364,7 +365,12 @@ export class ProjectDataService implements IProjectDataService {
 			currentData = currentData[prop];
 		});
 
-		this.$fs.writeJson(projectFileInfo.projectFilePath, data);
+		try {
+			this.$fs.writeJson(projectFileInfo.projectFilePath, currentData);
+
+		} catch (e) {
+			this.$logger.trace(e);
+		}
 	}
 
 	private removeProperty(projectDir: string, propertyName: string): void {

@@ -5,6 +5,7 @@ import { performanceLog } from "../../common/decorators";
 export class AddPlatformService implements IAddPlatformService {
 	constructor(
 		private $fs: IFileSystem,
+		private $logger: ILogger,
 		private $pacoteService: IPacoteService,
 		private $projectDataService: IProjectDataService,
 		private $terminalSpinnerService: ITerminalSpinnerService,
@@ -19,7 +20,9 @@ export class AddPlatformService implements IAddPlatformService {
 			spinner.start();
 
 			const frameworkDirPath = await this.extractPackage(packageToInstall);
+			this.$logger.trace(frameworkDirPath);
 			const frameworkPackageJsonContent = this.$fs.readJson(path.join(frameworkDirPath, "..", "package.json"));
+			this.$logger.trace(frameworkPackageJsonContent);
 			const frameworkVersion = frameworkPackageJsonContent.version;
 
 			await this.setPlatformVersion(platformData, projectData, frameworkVersion);
@@ -45,10 +48,17 @@ export class AddPlatformService implements IAddPlatformService {
 	}
 
 	private async extractPackage(pkg: string): Promise<string> {
+		this.$logger.trace(pkg);
 		const downloadedPackagePath = await this.$tempService.mkdirSync("runtimeDir");
-		await this.$pacoteService.extractPackage(pkg, downloadedPackagePath);
-		const frameworkDir = path.join(downloadedPackagePath, PROJECT_FRAMEWORK_FOLDER_NAME);
-		return path.resolve(frameworkDir);
+		if (this.$fs.exists(pkg)) {
+			const frameworkDir = path.join(downloadedPackagePath, "dist", PROJECT_FRAMEWORK_FOLDER_NAME);
+			await this.$fs.copyFile(pkg, downloadedPackagePath);
+			return path.resolve(frameworkDir);
+		} else {
+			const frameworkDir = path.join(downloadedPackagePath, PROJECT_FRAMEWORK_FOLDER_NAME);
+			await this.$pacoteService.extractPackage(pkg, downloadedPackagePath);
+			return path.resolve(frameworkDir);
+		}
 	}
 
 	@performanceLog()

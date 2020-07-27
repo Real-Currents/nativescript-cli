@@ -34,8 +34,8 @@ Get it using: `npm install -g nativescript`
     * [Run Your Project](#run-your-project)
 * [Extending the CLI](#extending-the-cli)
 * [Troubleshooting](#troubleshooting)
+* [How to Build (& Develop)](#how-to-build)
 * [How to Contribute](#how-to-contribute)
-* [How to Build](#how-to-build)
 * [Get Help](#get-help)
 * [License](#license)
 
@@ -317,17 +317,6 @@ If addressing the configuration issues does not resolve your problem, you can [r
 
 [Back to Top][1]
 
-How to Contribute
-===
-
-To learn how to log a bug that you just discovered, click [here](https://github.com/NativeScript/nativescript-cli/blob/master/CONTRIBUTING.md#report-an-issue).
-
-To learn how to suggest a new feature or improvement, click [here](https://github.com/NativeScript/nativescript-cli/blob/master/CONTRIBUTING.md#request-a-feature).
-
-To learn how to contribute to the code base, click [here](https://github.com/NativeScript/nativescript-cli/blob/master/CONTRIBUTING.md#contribute-to-the-code-base).
-
-[Back to Top][1]
-
 How to Build
 ===
 ```
@@ -338,6 +327,39 @@ npm run setup
 
 To use the locally built CLI instead `tns` you can call `PATH_TO_CLI_FOLDER/bin/tns`. For example:
 `PATH_TO_CLI_FOLDER/bin/tns run ios|android`
+
+### How to Develop
+
+Altenatively, if you plan on modifying the code base of either the cli or a particular platform (i.e. [android-runtime](https://github.com/Real-Currents/android-runtime)) then it is best to use `npm` to install a global link to the binary of your local build:
+```
+npm install -g .
+```
+... although you may have to create a link in node's global node_modules directory *before* running npm install:
+```
+ln -s ~/Public/android/nativescript/cli ~/.nvm/versions/node/v12.16.1/lib/node_modules/nativescript
+```
+
+
+Do the same with each nativescript project or sub-project that you intend to build locally. For instance:
+```
+npm install -g android-runtime/dist
+npm install -g NativeScript/dist/nativescript-core
+npm install -g NativeScript/dist/tns-core-modules
+npm install -g NativeScript/dist/tns-platform-declarations
+npm install -g nativescript-cli
+
+``` 
+
+[Back to Top][1]
+
+How to Contribute
+===
+
+To learn how to log a bug that you just discovered, click [here](https://github.com/NativeScript/nativescript-cli/blob/master/CONTRIBUTING.md#report-an-issue).
+
+To learn how to suggest a new feature or improvement, click [here](https://github.com/NativeScript/nativescript-cli/blob/master/CONTRIBUTING.md#request-a-feature).
+
+To learn how to contribute to the code base, click [here](https://github.com/NativeScript/nativescript-cli/blob/master/CONTRIBUTING.md#contribute-to-the-code-base).
 
 [Back to Top][1]
 

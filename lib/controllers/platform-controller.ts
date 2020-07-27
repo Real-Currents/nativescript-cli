@@ -17,15 +17,60 @@ export class PlatformController implements IPlatformController {
 		const [platform, version] = addPlatformData.platform.toLowerCase().split("@");
 		const projectData = this.$projectDataService.getProjectData(addPlatformData.projectDir);
 		const platformData = this.$platformsDataService.getPlatformData(platform, projectData);
+		const frameworkPath = '/home/revlin/Public/android/nativescript/android-runtime/dist';
+
+		addPlatformData.frameworkPath = frameworkPath;
 
 		this.$logger.trace(`Creating NativeScript project for the ${platform} platform`);
 		this.$logger.trace(`Path: ${platformData.projectRoot}`);
 		this.$logger.trace(`Package: ${projectData.projectIdentifiers[platform]}`);
 		this.$logger.trace(`Name: ${projectData.projectName}`);
 
+		this.$logger.trace(`Platform info:`);
+		this.$logger.trace(`Framework: ${addPlatformData.frameworkPath}`);
+		this.$logger.trace(`Version: ${version}`);
+
 		this.$logger.info("Copying template files...");
 
 		const packageToInstall = await this.getPackageToInstall(platformData, projectData, addPlatformData.frameworkPath, version);
+		this.$logger.trace(JSON.stringify(addPlatformData, function (m: any, r) {
+			const cache: any[] = [];
+			let message: any = m;
+			if (typeof m === 'object') try {
+				message = JSON.stringify(m, function (key, value) {
+					if ((typeof value === 'object') && (value !== null)) {
+						if (cache.indexOf(value) !== -1) {
+							/* Circular reference found, discard key */
+							return;
+						}
+						/* Store value in our collection */
+						cache.push(value);
+					}
+					return value;
+				});
+			} catch (e) {
+				console.debug(  "Could not stringify object or value:\n"+ e.message +"\n" );
+				message = m;
+			} finally {
+				if (typeof message !== "string") message = m;
+			}
+
+			if (typeof message === 'boolean') message = m + "";
+
+			if ((r !== undefined) && (typeof r.replace === 'function') && (typeof message === 'string'))
+				message = r.replace(/\$1/, message);
+
+			try {
+				console.debug(message);
+				console.debug();
+			} catch (e) {
+				//alert( message );
+			} finally {
+				return message;
+			}
+
+			return message;
+		}));
 
 		const installedPlatformVersion = await this.$addPlatformService.addPlatformSafe(projectData, platformData, packageToInstall, addPlatformData.nativePrepare);
 

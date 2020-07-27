@@ -6,6 +6,8 @@ export class AddPlatformData extends ControllerDataBase {
 	constructor(public projectDir: string, public platform: string, data: any) {
 		super(projectDir, platform, data);
 
-		this.frameworkPath = data.frameworkPath;
+		console.debug("PLATFORM DATA: ", projectDir, platform, data);
+
+		this.frameworkPath = data.frameworkPath || JSON.stringify(data);
 	}
 }
